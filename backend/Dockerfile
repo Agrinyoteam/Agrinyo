@@ -2,7 +2,7 @@
 # Mise en production : voir DEPLOIEMENT.md à la racine du projet.
 #   docker build -t agrinyo-backend backend
 #   docker run -d -p 8000:8000 --env-file backend/.env.production -v agrinyo-media:/app/media agrinyo-backend
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
