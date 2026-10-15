@@ -5,7 +5,7 @@
 # Un --build-arg VITE_API_URL=… la remplace. Vide : l'API est sur le même domaine que le site.
 
 # --- Construction ---
-FROM node:24-alpine AS construction
+FROM node:25-alpine AS construction
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -20,7 +20,7 @@ RUN if [ -z "$VITE_API_URL" ]; then unset VITE_API_URL; fi \
        fi
 
 # --- Service ---
-FROM node:24-alpine
+FROM node:25-alpine
 WORKDIR /app
 RUN npm install -g serve@14.2.4
 COPY --from=construction /app/dist ./dist
