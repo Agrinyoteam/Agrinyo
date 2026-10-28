@@ -138,3 +138,45 @@ export const useMessagesNonLus = (actif, cle) => useCompteur(getMessagesNonLus, 
 /** Propositions de machines pas encore vues sur les offres de l'agriculteur. */
 export const usePropositionsNonVues = (actif, cle) =>
   useCompteur(getPropositionsNonVues, EVENEMENT_PROPOSITIONS_VUES, actif, cle)
+
+export const mouvementReduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** true dès que l'élément entre dans l'écran (une seule fois). Sans IntersectionObserver : toujours visible. */
+export function useVisible(seuil = 0.2) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(() => !('IntersectionObserver' in window))
+  useEffect(() => {
+    const el = ref.current
+    if (!el || visible) return
+    const observateur = new IntersectionObserver(([entree]) => {
+      if (entree.isIntersecting) setVisible(true)
+    }, { threshold: seuil })
+    observateur.observe(el)
+    return () => observateur.disconnect()
+  }, [seuil, visible])
+  return [ref, visible]
+}
+
+/** Décalage vertical proportionnel au défilement (effet de profondeur sur une image). */
+export function useParallaxe(force = 0.15) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || mouvementReduit()) return
+    let image
+    const suivre = () => {
+      cancelAnimationFrame(image)
+      image = requestAnimationFrame(() => {
+        const haut = el.parentElement.getBoundingClientRect().top
+        el.style.transform = `translate3d(0, ${(-haut * force).toFixed(1)}px, 0) scale(1.12)`
+      })
+    }
+    suivre()
+    window.addEventListener('scroll', suivre, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', suivre)
+      cancelAnimationFrame(image)
+    }
+  }, [force])
+  return ref
+}
