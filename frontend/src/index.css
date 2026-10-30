@@ -2612,6 +2612,8 @@ select:focus-visible,
   position: relative;
   isolation: isolate;
   display: grid;
+  /* Colonne bornée à l'écran : sinon le titre et la recherche l'élargissent et la page déborde sur mobile. */
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   /* Le bas du bandeau laisse voir le champ, sur lequel se posent les chiffres. */
   padding: 12px 16px clamp(190px, 30vw, 300px);
@@ -2697,6 +2699,7 @@ select:focus-visible,
   position: relative;
   z-index: 2;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: 14px;
   width: 100%;
@@ -2750,6 +2753,7 @@ select:focus-visible,
 }
 
 .vitrine__recherche input {
+  min-width: 0;
   flex: 1;
   min-width: 0;
   min-height: 46px;
