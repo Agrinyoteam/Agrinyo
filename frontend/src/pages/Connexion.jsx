@@ -17,6 +17,28 @@ const CHAMPS_VIDES = {
   first_name: '', last_name: '', type_utilisateur: '', localisation: '',
 }
 
+// Format accepté par le serveur : 3 à 30 caractères, lettres sans accent, chiffres, point, tiret bas.
+const LONGUEUR_MAX_NOM_UTILISATEUR = 30
+
+/** « Jean-Éric » → « jeaneric » : sans accents, ni espaces, ni caractères refusés par le serveur. */
+function simplifier(texte) {
+  return texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+/** Nom d'utilisateur proposé à partir du prénom et du nom : « prenom.nom ». */
+function genererNomUtilisateur(prenom, nom) {
+  return [simplifier(prenom), simplifier(nom)].filter(Boolean).join('.').slice(0, LONGUEUR_MAX_NOM_UTILISATEUR)
+}
+
+/** Variante avec un numéro, quand le nom proposé est déjà pris : « prenom.nom42 ». */
+function avecNumero(nomUtilisateur) {
+  const numero = String(Math.floor(10 + Math.random() * 990))
+  return nomUtilisateur.slice(0, LONGUEUR_MAX_NOM_UTILISATEUR - numero.length) + numero
+}
+
+// Essais avec un numéro ajouté avant de laisser la personne choisir elle-même.
+const ESSAIS_NOM_UTILISATEUR = 3
+
 // L'écran de démarrage ne s'affiche qu'une fois par visite (onglet).
 const CLE_DEMARRAGE = 'agrilink.demarrage-vu'
 
@@ -64,6 +86,8 @@ export default function Connexion() {
   const [mode, setMode] = useState(choix.mode)
   const [champs, setChamps] = useState(() => ({ ...CHAMPS_VIDES, type_utilisateur: choix.role }))
   const [demarrage, setDemarrage] = useState(() => !choix.explicite && !demarrageDejaVu())
+  // Tant que la personne n'a pas tapé son propre nom d'utilisateur, il suit le prénom et le nom.
+  const [nomUtilisateurManuel, setNomUtilisateurManuel] = useState(false)
   const [seSouvenir, setSeSouvenir] = useState(false)
   const [erreur, setErreur] = useState(null)
   const [envoi, setEnvoi] = useState(false)
@@ -71,6 +95,46 @@ export default function Connexion() {
   const connexion = mode === 'connexion'
   const modifier = (nom) => (valeur) => setChamps((c) => ({ ...c, [nom]: valeur }))
   const saisie = (nom) => ({ value: champs[nom], onChange: (e) => modifier(nom)(e.target.value) })
+
+  const saisieNomComplet = (nom) => ({
+    value: champs[nom],
+    onChange: (e) => setChamps((c) => {
+      const suivants = { ...c, [nom]: e.target.value }
+      if (!nomUtilisateurManuel) suivants.username = genererNomUtilisateur(suivants.first_name, suivants.last_name)
+      return suivants
+    }),
+  })
+
+  const saisieNomUtilisateur = {
+    value: champs.username,
+    onChange: (e) => {
+      const valeur = e.target.value
+      // Champ vidé : on revient au nom proposé automatiquement.
+      const manuel = valeur.trim() !== ''
+      setNomUtilisateurManuel(manuel)
+      modifier('username')(manuel ? valeur : genererNomUtilisateur(champs.first_name, champs.last_name))
+    },
+  }
+
+  /** Inscription ; si le nom proposé automatiquement est déjà pris, réessaie avec un numéro. */
+  const inscrire = async (donnees) => {
+    let username = donnees.username
+    for (let essai = 0; ; essai += 1) {
+      try {
+        const profil = await sInscrire({ ...donnees, username })
+        if (username !== champs.username) modifier('username')(username)
+        return profil
+      } catch (err) {
+        const seulNomUtilisateurPris =
+          err instanceof ErreurApi && err.champ('username') && Object.keys(err.details).length === 1
+        if (nomUtilisateurManuel || !seulNomUtilisateurPris || essai === ESSAIS_NOM_UTILISATEUR) {
+          if (username !== champs.username) modifier('username')(username)
+          throw err
+        }
+        username = avecNumero(donnees.username)
+      }
+    }
+  }
 
   const allerApresConnexion = (profil) => {
     const pageParDefaut = profil.type_utilisateur === 'DETENTEUR' ? '/tableau-de-bord' : '/'
@@ -84,7 +148,7 @@ export default function Connexion() {
     try {
       const profil = connexion
         ? await seConnecter(champs.identifiant, champs.mot_de_passe, { seSouvenir })
-        : await sInscrire({
+        : await inscrire({
           username: champs.username,
           email: champs.email,
           telephone: `+228${champs.telephone}`,
@@ -181,8 +245,8 @@ export default function Connexion() {
                   </fieldset>
 
                   <div className="formulaire__deux">
-                    <Champ libelle="Prénom" Icone={IconeProfil} autoComplete="given-name" erreur={erreurChamp('first_name')} required {...saisie('first_name')} />
-                    <Champ libelle="Nom" Icone={IconeProfil} autoComplete="family-name" erreur={erreurChamp('last_name')} required {...saisie('last_name')} />
+                    <Champ libelle="Prénom" Icone={IconeProfil} autoComplete="given-name" erreur={erreurChamp('first_name')} required {...saisieNomComplet('first_name')} />
+                    <Champ libelle="Nom" Icone={IconeProfil} autoComplete="family-name" erreur={erreurChamp('last_name')} required {...saisieNomComplet('last_name')} />
                   </div>
                   <Champ
                     libelle="Nom d'utilisateur"
@@ -190,14 +254,15 @@ export default function Connexion() {
                     autoComplete="username"
                     autoCapitalize="none"
                     spellCheck={false}
-                    aide="Lettres, chiffres, point ou tiret bas. Vous pourrez vous connecter avec."
+                    aide="Créé à partir de vos prénom et nom, modifiable. Vous pourrez vous connecter avec."
                     erreur={erreurChamp('username')}
                     required
-                    {...saisie('username')}
+                    {...saisieNomUtilisateur}
                   />
                   <Champ
-                    libelle="E-mail (pour récupérer votre mot de passe)"
+                    libelle="E-mail (facultatif)"
                     Icone={IconeEnveloppe}
+                    aide="Utile pour récupérer votre mot de passe si vous l'oubliez."
                     type="email"
                     autoComplete="email"
                     autoCapitalize="none"
