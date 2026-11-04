@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import logo from '../assets/logo-agrink.png'
 
 const DUREE_MS = 2000
 
@@ -16,7 +17,7 @@ export default function EcranDemarrage({ onTermine }) {
     <button type="button" className="demarrage" onClick={onTermine} aria-label="AgriLink. Continuer vers la connexion">
       <span className="demarrage__cercle" aria-hidden="true" />
       <span className="demarrage__logo" aria-hidden="true">
-        <span className="demarrage__nom">AgriLink</span>
+        <img className="demarrage__visuel" src={logo} alt="" />
         <span className="demarrage__slogan">« Trouvez. Réservez. Cultivez. »</span>
       </span>
     </button>

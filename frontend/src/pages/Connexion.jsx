@@ -2,7 +2,8 @@ import { useCallback, useState } from 'react'
 import { ErreurApi, messageErreur } from '../api.js'
 import { BoutonFleche, Champ, ChampMotDePasse } from '../components/ChampsAuthentification.jsx'
 import EcranDemarrage from '../components/EcranDemarrage.jsx'
-import { IconeEnveloppe, IconeFeuille, IconeProfil, IconeRepere, IconeTelephone } from '../components/Icones.jsx'
+import logo from '../assets/logo-agrink.png'
+import { IconeEnveloppe, IconeProfil, IconeRepere, IconeTelephone } from '../components/Icones.jsx'
 import MotDePasseOublie from '../components/MotDePasseOublie.jsx'
 import { naviguer } from '../routeur.js'
 import { useSession } from '../session.jsx'
@@ -191,8 +192,7 @@ export default function Connexion() {
 
       <main className="authentification__contenu">
         <div className="authentification__logo">
-          <IconeFeuille width={64} height={64} />
-          <span className="authentification__nom">AgriLink</span>
+          <img className="authentification__visuel" src={logo} alt="AgriLink" />
           <span className="authentification__slogan">Machines agricoles près de chez vous</span>
         </div>
 

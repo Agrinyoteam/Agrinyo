@@ -1,4 +1,4 @@
-import { IconeFeuille } from './Icones.jsx'
+import logo from '../assets/logo-agrink.png'
 import Lien from './Lien.jsx'
 import Navigation from './Navigation.jsx'
 import { useSession } from '../session.jsx'
@@ -7,10 +7,7 @@ export function Marque() {
   const { estDetenteur } = useSession()
   return (
     <Lien vers={estDetenteur ? '/tableau-de-bord' : '/'} className="marque" aria-label="AgriLink, accueil">
-      <span className="marque__logo" aria-hidden="true">
-        <IconeFeuille />
-      </span>
-      AgriLink
+      <img className="marque__logo" src={logo} alt="" />
     </Lien>
   )
 }
