@@ -1,20 +1,22 @@
-/* Couleurs reprises de la maquette Figma (écran Accueil), assombries juste assez
-   pour que le texte blanc reste lisible en plein soleil. */
+/* Couleurs relevées sur le logo (maquettes) : vert forêt, crème, or des épis. */
 :root {
-  --vert: #24a148;
-  --vert-fonce: #17732f;
-  --vert-clair: #e3f6e8;
-  /* Vert sombre de la page de présentation (texte blanc dessus) et encre verte des titres. */
-  --vert-vif: #1f7a3f;
-  --vert-vif-fonce: #186433;
-  --encre-verte: #0f3d1f;
-  --jaune: #f5b800;
+  --vert: #184028;
+  --vert-fonce: #102818;
+  --vert-clair: #e4efe3;
+  --creme: #efdec2;
+  --creme-clair: #f5eedc;
+  --or: #887838;
+  /* Vert du mot du logo (texte blanc dessus) et encre des titres. */
+  --vert-vif: #184028;
+  --vert-vif-fonce: #102818;
+  --encre-verte: #102818;
+  --jaune: #c4a24e;
   --whatsapp: #128c7e;
   --texte: #1d1d1f;
   --texte-doux: #5f6368;
   --titre-section: #5c5c5c;
   --gris-pastille: #e4e4e4;
-  --fond: #fff;
+  --fond: #fbf6ee;
   --bordure: #ececec;
   --rayon: 14px;
   --hauteur-nav: 64px;
@@ -91,23 +93,21 @@ select:focus-visible,
 }
 
 .marque {
-  display: none;
+  display: flex;
   align-items: center;
-  gap: 10px;
+  min-height: 44px;
   color: #fff;
-  font-size: 1.25rem;
-  font-weight: 800;
   text-decoration: none;
 }
 
 .marque__logo {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--vert);
+  display: block;
+  height: 52px;
+  width: auto;
+  /* Pastille crème : le vert foncé du logo reste lisible sur l'en-tête vert. */
+  padding: 4px 10px;
+  border-radius: 14px;
+  background: var(--creme-clair);
 }
 
 .localisation {
@@ -260,7 +260,7 @@ select:focus-visible,
   border-radius: 18px;
   overflow: hidden;
   scroll-snap-align: start;
-  background: linear-gradient(135deg, #1d7f3a, #2fb457);
+  background: linear-gradient(135deg, #184028, #6d6840);
   color: #fff;
 }
 
@@ -688,8 +688,8 @@ select:focus-visible,
   width: min(100%, 300px);
   min-height: 56px;
   border-radius: 16px;
-  background: #5fd67c;
-  color: #0f3a1c;
+  background: var(--or);
+  color: #fff;
   font-size: 1.2rem;
 }
 
@@ -741,7 +741,7 @@ select:focus-visible,
   z-index: 10;
   justify-content: space-around;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: #e9e9e9;
+  background: #efe4cf;
   border-radius: 22px 22px 0 0;
 }
 
@@ -964,8 +964,7 @@ select:focus-visible,
   white-space: nowrap;
 }
 
-/* ---------- Écran de démarrage (maquette verte « AGRILINK ») ---------- */
-/* Vert de l'en-tête plutôt que le vert pâle de la maquette : le texte blanc reste lisible. */
+/* ---------- Écran de démarrage : fond crème du logo ---------- */
 .demarrage {
   position: fixed;
   inset: 0;
@@ -975,21 +974,21 @@ select:focus-visible,
   padding: 16px;
   overflow: hidden;
   border: 0;
-  background: var(--vert);
-  color: #fff;
+  background: var(--creme);
+  color: var(--encre-verte);
   cursor: pointer;
 }
 
-/* Disque gris cerclé de vert, à moitié sorti en bas à gauche. */
+/* Disque clair, à moitié sorti en bas à gauche. */
 .demarrage__cercle {
   position: absolute;
   bottom: -110px;
   left: -130px;
   width: 360px;
   height: 360px;
-  border: 26px solid #1c8a3c;
+  border: 26px solid var(--vert);
   border-radius: 50%;
-  background: #e0e0e0;
+  background: var(--creme-clair);
 }
 
 .demarrage__logo {
@@ -1000,15 +999,13 @@ select:focus-visible,
   animation: apparition 0.6s ease-out both;
 }
 
-.demarrage__nom {
-  font-size: clamp(2.6rem, 13vw, 4rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.demarrage__visuel {
+  width: min(88vw, 440px);
+  height: auto;
 }
 
 .demarrage__slogan {
+  color: var(--encre-verte);
   font-size: clamp(0.95rem, 4vw, 1.15rem);
   font-weight: 700;
 }
@@ -1022,24 +1019,25 @@ select:focus-visible,
 
 /* ---------- Page de connexion (maquette « Bienvenue ») ---------- */
 .authentification {
-  --vert-olive: #4b6b3a;
+  --vert-olive: #3d5c32;
 
   position: relative;
   min-height: 100dvh;
   overflow: hidden;
   padding: 0 16px calc(32px + env(safe-area-inset-bottom, 0px));
+  background: var(--creme);
 }
 
-/* Disque vert décoratif du coin supérieur gauche. */
+/* Disque crème du coin supérieur gauche, cerclé du vert du logo. */
 .authentification__cercle {
   position: absolute;
   top: -130px;
   left: -130px;
   width: 260px;
   height: 260px;
-  border: 14px solid #5fbf78;
+  border: 14px solid var(--vert);
   border-radius: 50%;
-  background: #74de8f;
+  background: var(--creme-clair);
   pointer-events: none;
 }
 
@@ -1055,20 +1053,16 @@ select:focus-visible,
 .authentification__logo {
   display: grid;
   justify-items: center;
-  color: #5aa83a;
+  gap: 8px;
 }
 
-.authentification__nom {
-  margin-top: 4px;
-  color: #5b3f2e;
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+.authentification__visuel {
+  width: min(100%, 260px);
+  height: auto;
 }
 
 .authentification__slogan {
-  color: #4f8a2e;
+  color: var(--vert);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -2587,12 +2581,12 @@ select:focus-visible,
 
 /* ---------- Page de présentation (maquette « Bring fresh growth ») ---------- */
 .bienvenue {
-  --terre: #6b4a2b;
-  --ciel: #eef6f0;
+  --terre: #705030;
+  --ciel: #f3ead8;
   padding-bottom: 0;
   /* 100vw de la bande « Comment ça marche » inclut la barre de défilement : pas de défilement horizontal. */
   overflow-x: clip;
-  background: #fff;
+  background: var(--fond);
 }
 
 /* Apparition au défilement ; rien ne bouge si l'utilisateur a réduit les animations. */
@@ -2642,11 +2636,7 @@ select:focus-visible,
 }
 
 .vitrine__barre .marque__logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: var(--vert-vif);
-  color: #fff;
+  height: 84px;
 }
 
 .vitrine__compte {
